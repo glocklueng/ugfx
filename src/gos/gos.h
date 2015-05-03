@@ -48,6 +48,14 @@
 	typedef unsigned long	size_t;
 	typedef unsigned long	delaytime_t;
 	typedef unsigned long	systemticks_t;
+	/** @} */
+	/**
+	 * @name	More platform (and operating system) dependent types
+	 * @pre		These types are only defined if GFX_ALLOW_MULTITHREAD is TRUE
+	 *
+	 * @note	Your platform may use slightly different definitions to these
+	 * @{
+	 */
 	typedef short			semcount_t;
 	typedef int				threadreturn_t;
 	typedef int				threadpriority_t;
@@ -55,6 +63,7 @@
 
 	/**
 	 * @brief	Declare a thread function
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @param[in] fnName	The name of the function
 	 * @param[in] param 	A custom parameter that is passed to the function
@@ -63,6 +72,7 @@
 
 	/**
 	 * @brief	Declare a thread stack
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @param[in] name 		The name of the stack
 	 * @param[in] sz 		The size of the stack
@@ -78,6 +88,13 @@
 	#define TRUE						1
 	#define TIME_IMMEDIATE				0
 	#define TIME_INFINITE				((delaytime_t)-1)
+	/** @} */
+	/**
+	 * @name	More constants
+	 * @pre		These constants are only defined if GFX_ALLOW_MULTITHREAD is TRUE
+	 * @note	Your platform may use slightly different definitions to these
+	 * @{
+	 */
 	#define MAX_SEMAPHORE_COUNT			((semcount_t)(((unsigned long)((semcount_t)(-1))) >> 1))
 	#define LOW_PRIORITY				0
 	#define NORMAL_PRIORITY				1
@@ -87,18 +104,21 @@
 	/**
 	 * @brief	A semaphore
 	 * @note	Your operating system will have a proper definition for this structure
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 */
 	typedef struct {} gfxSem;
 
 	/**
 	 * @brief	A mutex
 	 * @note	Your operating system will have a proper definition for this structure
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 */
 	typedef struct {} gfxMutex;
 
 	/**
 	 * @brief	A thread handle
 	 * @note	Your operating system will have a proper definition for this.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 */
 	typedef void * gfxThreadHandle;
 
@@ -169,6 +189,9 @@
 	 * @brief	Yield the current thread
 	 * @details	Give up the rest of the current time slice for this thread in order to give other threads
 	 * 			a chance to run.
+	 * @note	This is defined regardless of if GFX_ALLOW_MULTITHREAD is TRUE. On non-multithreading
+	 * 			compiles this function will perform system polling and so the semantic meaning is
+	 * 			the same regardless of if GFX_ALLOW_MULTITHREAD is set or not.
 	 *
 	 * @api
 	 */
@@ -230,6 +253,7 @@
 
 	/**
 	 * @brief	Lock the operating system to protect a sequence of code
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @note	Calling this will lock out all other threads from executing even at interrupt level
 	 * 			within the GFX system. On hardware this may be implemented as a disabling of interrupts,
@@ -246,6 +270,7 @@
 
 	/**
 	 * @brief	Unlock the operating system previous locked by gfxSystemLock()
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @api
 	 */
@@ -253,6 +278,7 @@
 
 	/**
 	 * @brief	Initialise a mutex to protect a region of code from other threads.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @param[in]	pmutex	A pointer to the mutex
 	 *
@@ -265,6 +291,7 @@
 
 	/**
 	 * @brief	Destroy a Mutex.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @param[in]	pmutex	A pointer to the mutex
 	 *
@@ -274,6 +301,7 @@
 
 	/**
 	 * @brief	Enter the critical code region protected by the mutex.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @details	Blocks until there is no other thread in the critical region.
 	 *
 	 * @param[in]	pmutex	A pointer to the mutex
@@ -284,6 +312,7 @@
 
 	/**
 	 * @brief	Exit the critical code region protected by the mutex.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @details	May cause another thread waiting on the mutex to now be placed into the run queue.
 	 *
 	 * @param[in]	pmutex	A pointer to the mutex
@@ -294,6 +323,7 @@
 
 	/**
 	 * @brief	Initialise a Counted Semaphore
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @param[in] psem		A pointer to the semaphore
 	 * @param[in] val		The initial value of the semaphore
@@ -312,6 +342,7 @@
 
 	/**
 	 * @brief	Destroy a Counted Semaphore
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @param[in] psem		A pointer to the semaphore
 	 *
@@ -323,6 +354,7 @@
 
 	/**
 	 * @brief	Wait on a semaphore
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @details	The semaphore counter is decreased and if the result becomes negative the thread waits for it to become
 	 * 				non-negative again
 	 * @return	FALSE if the wait timeout occurred otherwise TRUE
@@ -336,6 +368,7 @@
 
 	/**
 	 * @brief	Test if a wait on a semaphore can be satisfied immediately
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @details	Equivalent to @p gfxSemWait(psem, TIME_IMMEDIATE) except it can be called at interrupt level
 	 * @return	FALSE if the wait would occur occurred otherwise TRUE
 	 *
@@ -348,6 +381,7 @@
 
 	/**
 	 * @brief	Signal a semaphore
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @details	The semaphore counter is increased and if the result is non-positive then a waiting thread
 	 * 						 is queued for execution. Note that once the thread reaches "limit", further signals are
 	 * 						 ignored.
@@ -360,6 +394,7 @@
 
 	/**
 	 * @brief	Signal a semaphore
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @details	The semaphore counter is increased and if the result is non-positive then a waiting thread
 	 * 						 is queued for execution. Note that once the thread reaches "limit", further signals are
 	 * 						 ignored.
@@ -372,28 +407,8 @@
 	void gfxSemSignalI(gfxSem *psem);
 
 	/**
-	 * @brief	Get the current semaphore count
-	 * @return	The current semaphore count
-	 *
-	 * @param[in] psem		A pointer to the semaphore
-	 *
-	 * @api
-	 */
-	semcount_t gfxSemCounter(gfxSem *psem);
-
-	/**
-	 * @brief	Get the current semaphore count
-	 * @return	The current semaphore count
-	 *
-	 * @param[in] psem		A pointer to the semaphore
-	 *
-	 * @iclass
-	 * @api
-	 */
-	semcount_t gfxSemCounterI(gfxSem *psem);
-
-	/**
 	 * @brief	Start a new thread.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @return	Returns a thread handle if the thread was started, NULL on an error
 	 *
 	 * @param[in]	stackarea	A pointer to the area for the new threads stack or NULL to dynamically allocate it
@@ -409,6 +424,7 @@
 
 	/**
 	 * @brief	Wait for a thread to finish.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @return	Returns the thread exit code.
 	 *
 	 * @param[in]	thread		The Thread Handle
@@ -421,6 +437,7 @@
 
 	/**
 	 * @brief	Get the current thread handle.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 * @return	A thread handle
 	 *
 	 * @api
@@ -429,6 +446,7 @@
 
 	/**
 	 * @brief	Close the thread handle.
+	 * @pre		This are only defined if GFX_ALLOW_MULTITHREAD is TRUE
 	 *
 	 * @param[in]	thread		The Thread Handle
 	 *
@@ -466,6 +484,20 @@
 	#include "src/gos/gos_arduino.h"
 #else
 	#error "Your operating system is not supported yet"
+#endif
+
+/**
+ * If the operating system is capable of polling the following routines are also defined.
+ * We leave this to here so that the operating system can define GFX_OS_POLLS.
+ * Note: We are not doxygen commenting this as this should be undocumented for user programs.
+ */
+#if GFX_OS_POLLS
+	// Turn polling off
+	void gfxPollOff(void);
+	// Turn polling on (nesting off's and on's allows polling only at the top level so make sure they are symmetric)
+	void gfxPollOn(void);
+	// Perform a poll
+	void gfxPoll(void);
 #endif
 
 #endif /* _GOS_H */

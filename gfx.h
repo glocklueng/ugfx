@@ -156,6 +156,17 @@
 		#define GFX_USE_GFILE	FALSE
 	#endif
 /** @} */
+/* @name    GFX options that affect all modules
+ * @{
+ */
+	/**
+	 * @brief	Make GFX multi-thread safe wherever possible
+	 * @details	Defaults to FALSE
+	 */
+	#ifndef GFX_ALLOW_MULTITHREAD
+		#define GFX_ALLOW_MULTITHREAD	FALSE
+	#endif
+/** @} */
 
 /**
  * Get all the options for each sub-system.

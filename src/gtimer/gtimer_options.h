@@ -20,6 +20,13 @@
  * @name    GTIMER Functionality to be included
  * @{
  */
+	/**
+	 * @brief	Use a separate thread to implement GTimer rather than polling
+	 * @details	Defaults to FALSE
+	 */
+	#ifndef GTIMER_USE_THREAD
+		#define GTIMER_USE_THREAD				FALSE
+	#endif
 /**
  * @}
  *
@@ -29,6 +36,7 @@
 	/**
 	 * @brief	Defines the GTIMER thread priority
 	 * @details	Defaults to HIGH_PRIORITY
+	 * @pre		Only applicable if GTIMER_USE_THREAD is TRUE
 	 */
 	#ifndef GTIMER_THREAD_PRIORITY
 		#define GTIMER_THREAD_PRIORITY			HIGH_PRIORITY
@@ -36,6 +44,7 @@
 	/**
 	 * @brief   Defines the size of the timer threads work area (stack+structures).
 	 * @details	Defaults to 2048 bytes
+	 * @pre		Only applicable if GTIMER_USE_THREAD is TRUE
 	 */
 	#ifndef GTIMER_THREAD_WORKAREA_SIZE
 		#define GTIMER_THREAD_WORKAREA_SIZE		2048

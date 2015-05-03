@@ -104,17 +104,29 @@
  		#define GFX_FREERTOS_USE_TRACE	FALSE
  	#endif
  	/**
- 	 * @brief	How much RAM should uGFX use for the heap
- 	 * @details	Defaults to 0. Only valid with GFX_USE_OS_RAW32
- 	 * @note	If 0 then the standard C runtime malloc(), free() and realloc()
- 	 * 			are used.
- 	 * @note	If it is non-zero then this is the number of bytes of RAM
- 	 * 			to use for the heap (gfxAlloc() and gfxFree()). No C
- 	 * 			runtime routines will be used and a new routine @p gfxAddHeapBlock()
- 	 * 			is added allowing the user to add extra memory blocks to the heap.
+ 	 * @brief	How much RAM (in bytes) should uGFX use for the heap
+ 	 * @details	Defaults to 0
+ 	 * @note	If 0 then the safe heap implementation is not used. Either
+ 	 * 			the C library or the operating system heap manager is used
+ 	 * 			instead.
+ 	 * @note	No C runtime library routines will be used for the safe heap.
+ 	 * @note	A new routine @p gfxAddHeapBlock() is added allowing the user
+ 	 * 			to add extra memory blocks to the heap.
+ 	 * @note	The safe heap is safe even in multithread environments. The safe
+ 	 * 			heap is required as many C library implementations crash when
+ 	 * 			called from a different stack such as when the threading implementation
+ 	 * 			included with uGFX is used. Some operating systems also just don't
+ 	 * 			have a memory allocator included.
  	 */
-	#ifndef GOS_RAW_HEAP_SIZE
-		#define GOS_RAW_HEAP_SIZE		0
+	#ifndef GFX_OS_SAFEHEAP_SIZE
+		#define GFX_OS_SAFEHEAP_SIZE		0
+	#endif
+ 	/**
+ 	 * @brief	Use the C Library memory allocator
+ 	 * @details	This option is ignored if the safe heap is used
+ 	 */
+	#ifndef GFX_OS_CLIB_HEAP
+		#define GFX_OS_CLIB_HEAP			FALSE
 	#endif
 /** @} */
 

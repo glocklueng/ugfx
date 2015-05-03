@@ -1,4 +1,5 @@
-GFXSRC +=   $(GFXLIB)/src/gos/gos_chibios.c	\
+GFXSRC +=   $(GFXLIB)/src/gos/gos.c	\
+			$(GFXLIB)/src/gos/gos_chibios.c	\
 			$(GFXLIB)/src/gos/gos_freertos.c \
 			$(GFXLIB)/src/gos/gos_win32.c \
 			$(GFXLIB)/src/gos/gos_linux.c \

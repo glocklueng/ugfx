@@ -17,11 +17,15 @@
 #define _GTIMER_RULES_H
 
 #if GFX_USE_GTIMER
-	#if GFX_USE_GDISP && !GDISP_NEED_MULTITHREAD
+	#if GFX_ALLOW_MULTITHREAD && !GFX_CAN_POLL_DURING_LOCKS && !GTIMER_USE_THREAD
 		#if GFX_DISPLAY_RULE_WARNINGS
-			#warning "GTIMER: GDISP_NEED_MULTITHREAD has not been specified."
-			#warning "GTIMER: Make sure you are not performing any GDISP/GWIN drawing operations in the timer callback!"
+			#warning "GTIMER: Your operating system requires GTIMER_USE_THREAD when GFX_ALLOW_MULTITHREAD is TRUE. It has been turned on for you."
 		#endif
+		#undef GTIMER_USE_THREAD
+		#define GTIMER_USE_THREAD	TRUE
+	#endif
+	#if GTIMER_USE_THREAD && !GFX_ALLOW_MULTITHREAD
+		#error "GTIMER: You must specify GFX_ALLOW_MULTITHREAD if GTIMER_USE_THREAD is TRUE"
 	#endif
 #endif
 

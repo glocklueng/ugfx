@@ -21,10 +21,10 @@ static bool_t initDone = FALSE;
 extern void _gosInit(void);
 extern void _gosDeinit(void);
 #ifdef GFX_OS_EXTRA_INIT_FUNCTION
-		extern void GFX_OS_EXTRA_INIT_FUNCTION(void);
+	extern void GFX_OS_EXTRA_INIT_FUNCTION(void);
 #endif
 #ifdef GFX_OS_EXTRA_DEINIT_FUNCTION
-		extern void GFX_OS_EXTRA_DEINIT_FUNCTION(void);
+	extern void GFX_OS_EXTRA_DEINIT_FUNCTION(void);
 #endif
 #if GFX_USE_GDRIVER
 	extern void _gdriverInit(void);
@@ -47,6 +47,9 @@ extern void _gosDeinit(void);
 	extern void _geventDeinit(void);
 #endif
 #if GFX_USE_GTIMER
+	#if !GTIMER_USE_THREAD
+		extern void _gtimerPoll(void);
+	#endif
 	extern void _gtimerInit(void);
 	extern void _gtimerDeinit(void);
 #endif
@@ -70,6 +73,9 @@ extern void _gosDeinit(void);
 	extern void _gmiscInit(void);
 	extern void _gmiscDeinit(void);
 #endif
+#if GFX_OS_SAFEHEAP_SIZE != 0
+	extern void _gfxSafeHeapInit(void);
+#endif
 
 void gfxInit(void)
 {
@@ -80,6 +86,9 @@ void gfxInit(void)
 
 	// These must be initialised in the order of their dependancies
 
+	#if GFX_OS_SAFEHEAP_SIZE != 0
+		_gfxSafeHeapInit();
+	#endif
 	_gosInit();
 	#ifdef GFX_OS_EXTRA_INIT_FUNCTION
 		GFX_OS_EXTRA_INIT_FUNCTION();
@@ -164,3 +173,23 @@ void gfxDeinit(void)
 	#endif
 	_gosDeinit();
 }
+
+#if GFX_OS_POLLS
+	static int pollCounter = 0;
+
+	void gfxPollOff(void) {
+		pollCounter++;
+	}
+	void gfxPollOn(void) {
+		pollCounter--;
+	}
+	void gfxPoll(void) {
+		if (pollCounter) {
+			pollCounter++;
+			#if GFX_USE_GTIMER && !GTIMER_USE_THREAD
+				_gtimerPoll();
+			#endif
+			pollCounter--;
+		}
+	}
+#endif

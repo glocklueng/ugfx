@@ -25,6 +25,9 @@
 
 #if GFX_USE_OS_RAW32
 
+// This operating system can always poll
+#define GFX_OS_POLLS	TRUE
+
 /*===========================================================================*/
 /* Special Macros just for a Raw implementation                              */
 /*===========================================================================*/
@@ -58,33 +61,35 @@ typedef unsigned char	bool_t;
 
 typedef uint32_t		delaytime_t;
 typedef uint32_t		systemticks_t;
-typedef short			semcount_t;
-typedef int				threadreturn_t;
-typedef int				threadpriority_t;
-
-#define DECLARE_THREAD_FUNCTION(fnName, param)	threadreturn_t fnName(void *param)
-#define DECLARE_THREAD_STACK(name, sz)			uint8_t name[sz];
 
 #define TIME_IMMEDIATE				0
 #define TIME_INFINITE				((delaytime_t)-1)
-#define MAX_SEMAPHORE_COUNT			0x7FFF
-#define LOW_PRIORITY				0
-#define NORMAL_PRIORITY				1
-#define HIGH_PRIORITY				2
 
-typedef struct {
-	semcount_t		cnt;
-	semcount_t		limit;
-} gfxSem;
+#if GFX_ALLOW_MULTITHREAD
+	typedef short			semcount_t;
+	typedef int				threadreturn_t;
+	typedef int				threadpriority_t;
 
-typedef uint32_t		gfxMutex;
-typedef void *			gfxThreadHandle;
+	#define DECLARE_THREAD_FUNCTION(fnName, param)	threadreturn_t fnName(void *param)
+	#define DECLARE_THREAD_STACK(name, sz)			uint8_t name[sz];
 
-#define gfxThreadClose(thread)
-#define gfxMutexDestroy(pmutex)
-#define gfxSemDestroy(psem)
-#define gfxSemCounter(psem)			((psem)->cnt)
-#define gfxSemCounterI(psem)		((psem)->cnt)
+	#define MAX_SEMAPHORE_COUNT			0x7FFF
+	#define LOW_PRIORITY				0
+	#define NORMAL_PRIORITY				1
+	#define HIGH_PRIORITY				2
+
+	typedef struct {
+		semcount_t		cnt;
+		semcount_t		limit;
+	} gfxSem;
+
+	typedef uint32_t		gfxMutex;
+	typedef void *			gfxThreadHandle;
+
+	#define gfxThreadClose(thread)
+	#define gfxMutexDestroy(pmutex)
+	#define gfxSemDestroy(psem)
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,24 +104,30 @@ extern "C" {
 	void *gfxAlloc(size_t sz);
 	void *gfxRealloc(void *ptr, size_t oldsz, size_t newsz);
 	void gfxFree(void *ptr);
-	void gfxYield(void);
+
 	void gfxSleepMilliseconds(delaytime_t ms);
 	void gfxSleepMicroseconds(delaytime_t ms);
 	systemticks_t gfxSystemTicks(void);
 	systemticks_t gfxMillisecondsToTicks(delaytime_t ms);
-	void gfxSystemLock(void);
-	void gfxSystemUnlock(void);
-	void gfxMutexInit(gfxMutex *pmutex);
-	void gfxMutexEnter(gfxMutex *pmutex);
-	void gfxMutexExit(gfxMutex *pmutex);
-	void gfxSemInit(gfxSem *psem, semcount_t val, semcount_t limit);
-	bool_t gfxSemWait(gfxSem *psem, delaytime_t ms);
-	bool_t gfxSemWaitI(gfxSem *psem);
-	void gfxSemSignal(gfxSem *psem);
-	void gfxSemSignalI(gfxSem *psem);
-	gfxThreadHandle gfxThreadCreate(void *stackarea, size_t stacksz, threadpriority_t prio, DECLARE_THREAD_FUNCTION((*fn),p), void *param);
-	threadreturn_t gfxThreadWait(gfxThreadHandle thread);
-	gfxThreadHandle gfxThreadMe(void);
+
+	#if GFX_ALLOW_MULTITHREAD
+		void gfxSystemLock(void);
+		void gfxSystemUnlock(void);
+		void gfxMutexInit(gfxMutex *pmutex);
+		void gfxMutexEnter(gfxMutex *pmutex);
+		void gfxMutexExit(gfxMutex *pmutex);
+		void gfxSemInit(gfxSem *psem, semcount_t val, semcount_t limit);
+		bool_t gfxSemWait(gfxSem *psem, delaytime_t ms);
+		bool_t gfxSemWaitI(gfxSem *psem);
+		void gfxSemSignal(gfxSem *psem);
+		void gfxSemSignalI(gfxSem *psem);
+		gfxThreadHandle gfxThreadCreate(void *stackarea, size_t stacksz, threadpriority_t prio, DECLARE_THREAD_FUNCTION((*fn),p), void *param);
+		threadreturn_t gfxThreadWait(gfxThreadHandle thread);
+		gfxThreadHandle gfxThreadMe(void);
+		void gfxYield(void);
+	#else
+		#define gfxYield()		gfxPoll()
+	#endif
 
 #ifdef __cplusplus
 }

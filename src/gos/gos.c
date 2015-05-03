@@ -5,8 +5,9 @@
  *              http://ugfx.org/license.html
  */
 
-// We need to include stdio.h below for Win32 emulation. Turn off GFILE_NEED_STDIO just for this file to prevent conflicts
-#define GFILE_NEED_STDIO_MUST_BE_OFF
+/**
+ * This file contains some common implementations that various operating systems can turn on.
+ */
 
 #include "gfx.h"
 
@@ -14,107 +15,29 @@
 
 #include <string.h>				// Prototype for memcpy()
 
-#if GOS_RAW_HEAP_SIZE != 0
-	static void _gosHeapInit(void);
-#else
-	#define _gosHeapInit()
-#endif
-
-#if GFX_ALLOW_MULTITHREAD
-	static void _gosThreadsInit(void);
-#else
-	#define _gosThreadsInit()
-#endif
-
 /*********************************************************
- * Initialise
+ * Exit functions
  *********************************************************/
-
-void _gosInit(void)
-{
-	/* No initialization of the operating system itself is needed as there isn't one.
-	 * On the other hand the C runtime should still already be initialized before
-	 * getting here!
-	 */
-	#warning "GOS: Raw32 - Make sure you initialize your hardware and the C runtime before calling gfxInit() in your application!"
-
-	// Set up the heap allocator
-	_gosHeapInit();
-
-	// Start the scheduler
-	_gosThreadsInit();
-}
-
-void _gosDeinit(void)
-{
-	/* ToDo */
-}
-
-/*********************************************************
- * For WIn32 emulation - automatically add the tick functions
- * the user would normally have to provide for bare metal.
- *********************************************************/
-
-#if defined(WIN32)
-	#undef Red
-	#undef Green
-	#undef Blue
-	#define WIN32_LEAN_AND_MEAN
-	#include <stdio.h>
-	#include <windows.h>
-	systemticks_t gfxSystemTicks(void)						{ return GetTickCount(); }
-	systemticks_t gfxMillisecondsToTicks(delaytime_t ms)	{ return ms; }
-#endif
-
-/*********************************************************
- * Exit everything functions
- *********************************************************/
-
-void gfxHalt(const char *msg) {
-	#if defined(WIN32)
-		fprintf(stderr, "%s\n", msg);
-		ExitProcess(1);
-	#else
+#if GOS_OS_NEED_EXIT
+	void gfxHalt(const char *msg) {
 		volatile uint32_t	dummy;
 		(void)				msg;
 
 		while(1)
 			dummy++;
-	#endif
-}
-
-void gfxExit(void) {
-	#if defined(WIN32)
-		ExitProcess(0);
-	#else
+	}
+	void gfxExit(void) {
 		volatile uint32_t	dummy;
 
 		while(1)
 			dummy++;
-	#endif
-}
+	}
+#endif
 
 /*********************************************************
- * Head allocation functions
+ * Heap allocation functions
  *********************************************************/
-
-#if GOS_RAW_HEAP_SIZE == 0
-	#include <stdlib.h>				// Prototype for malloc(), realloc() and free()
-
-	void *gfxAlloc(size_t sz) {
-		return malloc(sz);
-	}
-
-	void *gfxRealloc(void *ptr, size_t oldsz, size_t newsz) {
-		(void) oldsz;
-		return realloc(ptr, newsz);
-	}
-
-	void gfxFree(void *ptr) {
-		free(ptr);
-	}
-
-#else
+#if GFX_OS_SAFEHEAP_SIZE != 0
 
 	// Slot structure - user memory follows
 	typedef struct memslot {
@@ -137,7 +60,7 @@ void gfxExit(void) {
 	static memslot *			freeSlots;
 	static char					heap[GOS_RAW_HEAP_SIZE];
 
-	static void _gosHeapInit(void) {
+	static void _gfxSafeHeapInit(void) {
 		lastSlot = 0;
 		gfxAddHeapBlock(heap, GOS_RAW_HEAP_SIZE);
 	}
@@ -274,6 +197,22 @@ void gfxExit(void) {
 		NextFree(p) = freeSlots;
 		freeSlots = p;
 	}
+
+#elif GFX_OS_CLIB_HEAP
+	#include <stdlib.h>				// Prototype for malloc(), realloc() and free()
+
+	void *gfxAlloc(size_t sz) {
+		return malloc(sz);
+	}
+
+	void *gfxRealloc(void *ptr, size_t oldsz, size_t newsz) {
+		(void) oldsz;
+		return realloc(ptr, newsz);
+	}
+
+	void gfxFree(void *ptr) {
+		free(ptr);
+	}
 #endif
 
 /*********************************************************
@@ -324,7 +263,7 @@ void gfxSleepMicroseconds(delaytime_t ms) {
 	} while (gfxSystemTicks() - starttm < delay);
 }
 
-#if GFX_ALLOW_MULTITHREAD
+#if GOS_OS_NEED_THREADS
 	/*********************************************************
 	 * Semaphores and critical region functions
 	 *********************************************************/
