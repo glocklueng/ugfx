@@ -7,18 +7,45 @@
 
 /**
  * This file contains some common implementations that various operating systems can turn on.
+ * GFX_OS_POLLS			- The operating system polls
+ * GFX_OS_NEED_EXIT		- If TRUE then gfxHalt(), gfxExit() are defined as "wait-forever"
+ * GFX_OS_SAFEHEAP_SIZE	- Non zero provides gfxAlloc(), gfxFree() and gfxRealloc()
+ * GFX_OS_CLIB_HEAP		- If TRUE then provides gfxAlloc(), gfxFree() and gfxRealloc()
+ * GFX_OS_SLEEP_YIELD	- If TRUE then gfxSleepMilliseconds() and gfxSleepMicroseconds() are defined using gfxYield()
+ * GFX_OS_NEED_THREADS	- If TRUE then semaphores, mutexes and threading functions are defined using a cooperative multitasker
  */
 
 #include "gfx.h"
 
-#if GFX_USE_OS_RAW32
+#include <string.h>				// Prototype for memcpy() - Used by a number of routines below
 
-#include <string.h>				// Prototype for memcpy()
+/*********************************************************
+ * Polling functions
+ *********************************************************/
+#if GFX_OS_POLLS
+	static int pollCounter = 0;
+
+	void gfxPollOff(void) {
+		pollCounter++;
+	}
+	void gfxPollOn(void) {
+		pollCounter--;
+	}
+	void gfxPoll(void) {
+		if (pollCounter) {
+			pollCounter++;
+			#if GFX_USE_GTIMER && !GTIMER_USE_THREAD
+				_gtimerPoll();
+			#endif
+			pollCounter--;
+		}
+	}
+#endif
 
 /*********************************************************
  * Exit functions
  *********************************************************/
-#if GOS_OS_NEED_EXIT
+#if GFX_OS_NEED_EXIT
 	void gfxHalt(const char *msg) {
 		volatile uint32_t	dummy;
 		(void)				msg;
@@ -218,52 +245,53 @@
 /*********************************************************
  * Sleep functions
  *********************************************************/
+#if	GFX_OS_SLEEP_YIELD
+	void gfxSleepMilliseconds(delaytime_t ms) {
+		systemticks_t	starttm, delay;
 
-void gfxSleepMilliseconds(delaytime_t ms) {
-	systemticks_t	starttm, delay;
+		// Safety first
+		switch (ms) {
+		case TIME_IMMEDIATE:
+			return;
+		case TIME_INFINITE:
+			while(1)
+				gfxYield();
+			return;
+		}
 
-	// Safety first
-	switch (ms) {
-	case TIME_IMMEDIATE:
-		return;
-	case TIME_INFINITE:
-		while(1)
+		// Convert our delay to ticks
+		delay = gfxMillisecondsToTicks(ms);
+		starttm = gfxSystemTicks();
+
+		do {
 			gfxYield();
-		return;
+		} while (gfxSystemTicks() - starttm < delay);
 	}
 
-	// Convert our delay to ticks
-	delay = gfxMillisecondsToTicks(ms);
-	starttm = gfxSystemTicks();
+	void gfxSleepMicroseconds(delaytime_t ms) {
+		systemticks_t	starttm, delay;
 
-	do {
-		gfxYield();
-	} while (gfxSystemTicks() - starttm < delay);
-}
+		// Safety first
+		switch (ms) {
+		case TIME_IMMEDIATE:
+			return;
+		case TIME_INFINITE:
+			while(1)
+				gfxYield();
+			return;
+		}
 
-void gfxSleepMicroseconds(delaytime_t ms) {
-	systemticks_t	starttm, delay;
+		// Convert our delay to ticks
+		delay = gfxMillisecondsToTicks(ms/1000);
+		starttm = gfxSystemTicks();
 
-	// Safety first
-	switch (ms) {
-	case TIME_IMMEDIATE:
-		return;
-	case TIME_INFINITE:
-		while(1)
+		do {
 			gfxYield();
-		return;
+		} while (gfxSystemTicks() - starttm < delay);
 	}
+#endif
 
-	// Convert our delay to ticks
-	delay = gfxMillisecondsToTicks(ms/1000);
-	starttm = gfxSystemTicks();
-
-	do {
-		gfxYield();
-	} while (gfxSystemTicks() - starttm < delay);
-}
-
-#if GOS_OS_NEED_THREADS
+#if GFX_OS_NEED_THREADS && GFX_ALLOW_MULTITHREAD
 	/*********************************************************
 	 * Semaphores and critical region functions
 	 *********************************************************/
@@ -681,5 +709,3 @@ void gfxSleepMicroseconds(delaytime_t ms) {
 	}
 
 #endif
-
-#endif /* GFX_USE_OS_RAW32 */

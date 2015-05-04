@@ -39,6 +39,15 @@
 #endif
 
 /**
+ * @brief	Use C function calling convention for ugfx
+ */
+#ifdef __cplusplus
+	#define	C_FN		extern "C"
+#else
+	#define	C_FN
+#endif
+
+/**
  * @brief   Mark a function as deprecated.
  */
 #ifndef DEPRECATED
@@ -222,41 +231,33 @@
 #include "src/gadc/gadc.h"
 #include "src/gaudio/gaudio.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+ * @brief	The one call to start it all
+ *
+ * @note	This will initialise each sub-system that has been turned on.
+ * 			For example, if GFX_USE_GDISP is defined then display will be initialised
+ * 			and cleared to black.
+ * @note	If you define GFX_NO_OS_INIT as TRUE in your gfxconf.h file then ugfx doesn't try to
+ * 			initialise the operating system for you when you call @p gfxInit().
+ * @note	If you define GFX_OS_EXTRA_INIT_FUNCTION in your gfxconf.h file the macro is the
+ * 			name of a void function with no parameters that is called immediately after
+ * 			operating system initialisation (whether or not GFX_NO_OS_INIT is set).
+ * @note	If you define GFX_OS_EXTRA_DEINIT_FUNCTION in your gfxconf.h file the macro is the
+ * 			name of a void function with no parameters that is called immediately before
+ * 			operating system de-initialisation (as ugfx is exiting).
+ *
+ * @api
+ */
+C_FN void gfxInit(void);
 
-	/**
-	 * @brief	The one call to start it all
-	 *
-	 * @note	This will initialise each sub-system that has been turned on.
-	 * 			For example, if GFX_USE_GDISP is defined then display will be initialised
-	 * 			and cleared to black.
-	 * @note	If you define GFX_NO_OS_INIT as TRUE in your gfxconf.h file then ugfx doesn't try to
-	 * 			initialise the operating system for you when you call @p gfxInit().
-	 * @note	If you define GFX_OS_EXTRA_INIT_FUNCTION in your gfxconf.h file the macro is the
-	 * 			name of a void function with no parameters that is called immediately after
-	 * 			operating system initialisation (whether or not GFX_NO_OS_INIT is set).
-	 * @note	If you define GFX_OS_EXTRA_DEINIT_FUNCTION in your gfxconf.h file the macro is the
-	 * 			name of a void function with no parameters that is called immediately before
-	 * 			operating system de-initialisation (as ugfx is exiting).
-	 *
-	 * @api
-	 */
-	void gfxInit(void);
-
-	/**
-	 * @brief	The one call to end it all
-	 *
-	 * @note	This will de-initialise each sub-system that has been turned on.
-	 *
-	 * @api
-	 */
-	void gfxDeinit(void);
-
-#ifdef __cplusplus
-}
-#endif
+/**
+ * @brief	The one call to end it all
+ *
+ * @note	This will de-initialise each sub-system that has been turned on.
+ *
+ * @api
+ */
+C_FN void gfxDeinit(void);
 
 #endif /* _GFX_H */
 /** @} */

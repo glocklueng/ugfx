@@ -126,10 +126,6 @@
 	/* Function declarations.                                                    */
 	/*===========================================================================*/
 
-	#ifdef __cplusplus
-	extern "C" {
-	#endif
-
 	/**
 	 * @brief	Halt the GFX application due to an error.
 	 *
@@ -137,14 +133,14 @@
 	 *
 	 * @api
 	 */
-	void gfxHalt(const char *msg);
+	C_FN void gfxHalt(const char *msg);
 
 	/**
 	 * @brief	Exit the GFX application.
 	 *
 	 * @api
 	 */
-	void gfxExit(void);
+	C_FN void gfxExit(void);
 
 	/**
 	 * @brief	Allocate memory
@@ -154,7 +150,7 @@
 	 *
 	 * @api
 	 */
-	void *gfxAlloc(size_t sz);
+	C_FN void *gfxAlloc(size_t sz);
 
 	/**
 	 * @brief	Re-allocate memory
@@ -174,7 +170,7 @@
 	 *
 	 * @api
 	 */
-	void *gfxRealloc(void *ptr, size_t oldsz, size_t newsz);
+	C_FN void *gfxRealloc(void *ptr, size_t oldsz, size_t newsz);
 
 	/**
 	 * @brief	Free memory
@@ -183,7 +179,7 @@
 	 *
 	 * @api
 	 */
-	void gfxFree(void *ptr);
+	C_FN void gfxFree(void *ptr);
 
 	/**
 	 * @brief	Yield the current thread
@@ -195,7 +191,7 @@
 	 *
 	 * @api
 	 */
-	void gfxYield(void);
+	C_FN void gfxYield(void);
 
 	/**
 	 * @brief	Put the current thread to sleep for the specified period in milliseconds
@@ -208,7 +204,7 @@
 	 *
 	 * @api
 	 */
-	void gfxSleepMilliseconds(delaytime_t ms);
+	C_FN void gfxSleepMilliseconds(delaytime_t ms);
 
 	/**
 	 * @brief	Put the current thread to sleep for the specified period in microseconds
@@ -220,7 +216,7 @@
 	 *
 	 * @api
 	 */
-	void gfxSleepMicroseconds(delaytime_t us);
+	C_FN void gfxSleepMicroseconds(delaytime_t us);
 
 	/**
 	 * @brief	Get the current operating system tick time
@@ -236,7 +232,7 @@
 	 *
 	 * @api
 	 */
-	systemticks_t gfxSystemTicks(void);
+	C_FN systemticks_t gfxSystemTicks(void);
 
 	/**
 	 * @brief	Convert a given number of millseconds to a number of operating system ticks
@@ -249,7 +245,7 @@
 	 *
 	 * @api
 	 */
-	systemticks_t gfxMillisecondsToTicks(delaytime_t ms);
+	C_FN systemticks_t gfxMillisecondsToTicks(delaytime_t ms);
 
 	/**
 	 * @brief	Lock the operating system to protect a sequence of code
@@ -266,7 +262,7 @@
 	 *
 	 * @api
 	 */
-	void gfxSystemLock(void);
+	C_FN void gfxSystemLock(void);
 
 	/**
 	 * @brief	Unlock the operating system previous locked by gfxSystemLock()
@@ -274,7 +270,7 @@
 	 *
 	 * @api
 	 */
-	void gfxSystemUnlock(void);
+	C_FN void gfxSystemUnlock(void);
 
 	/**
 	 * @brief	Initialise a mutex to protect a region of code from other threads.
@@ -287,7 +283,7 @@
 	 *
 	 * @api
 	 */
-	void gfxMutexInit(gfxMutex *pmutex);
+	C_FN void gfxMutexInit(gfxMutex *pmutex);
 
 	/**
 	 * @brief	Destroy a Mutex.
@@ -297,7 +293,7 @@
 	 *
 	 * @api
 	 */
-	void gfxMutexDestroy(gfxMutex *pmutex);
+	C_FN void gfxMutexDestroy(gfxMutex *pmutex);
 
 	/**
 	 * @brief	Enter the critical code region protected by the mutex.
@@ -308,7 +304,7 @@
 	 *
 	 * @api
 	 */
-	void gfxMutexEnter(gfxMutex *pmutex);
+	C_FN void gfxMutexEnter(gfxMutex *pmutex);
 
 	/**
 	 * @brief	Exit the critical code region protected by the mutex.
@@ -319,7 +315,7 @@
 	 *
 	 * @api
 	 */
-	void gfxMutexExit(gfxMutex *pmutex);
+	C_FN void gfxMutexExit(gfxMutex *pmutex);
 
 	/**
 	 * @brief	Initialise a Counted Semaphore
@@ -338,7 +334,7 @@
 	 *
 	 * @api
 	 */
-	void gfxSemInit(gfxSem *psem, semcount_t val, semcount_t limit);
+	C_FN void gfxSemInit(gfxSem *psem, semcount_t val, semcount_t limit);
 
 	/**
 	 * @brief	Destroy a Counted Semaphore
@@ -350,7 +346,7 @@
 	 *
 	 * @api
 	 */
-	void gfxSemDestroy(gfxSem *psem);
+	C_FN void gfxSemDestroy(gfxSem *psem);
 
 	/**
 	 * @brief	Wait on a semaphore
@@ -364,7 +360,7 @@
 	 *
 	 * @api
 	 */
-	bool_t gfxSemWait(gfxSem *psem, delaytime_t ms);
+	C_FN bool_t gfxSemWait(gfxSem *psem, delaytime_t ms);
 
 	/**
 	 * @brief	Test if a wait on a semaphore can be satisfied immediately
@@ -377,7 +373,7 @@
 	 * @iclass
 	 * @api
 	 */
-	bool_t gfxSemWaitI(gfxSem *psem);
+	C_FN bool_t gfxSemWaitI(gfxSem *psem);
 
 	/**
 	 * @brief	Signal a semaphore
@@ -390,7 +386,7 @@
 	 *
 	 * @api
 	 */
-	void gfxSemSignal(gfxSem *psem);
+	C_FN void gfxSemSignal(gfxSem *psem);
 
 	/**
 	 * @brief	Signal a semaphore
@@ -404,7 +400,7 @@
 	 * @iclass
 	 * @api
 	 */
-	void gfxSemSignalI(gfxSem *psem);
+	C_FN void gfxSemSignalI(gfxSem *psem);
 
 	/**
 	 * @brief	Start a new thread.
@@ -420,7 +416,7 @@
 	 *
 	 * @api
 	 */
-	gfxThreadHandle gfxThreadCreate(void *stackarea, size_t stacksz, threadpriority_t prio, DECLARE_THREAD_FUNCTION((*fn),p), void *param);
+	C_FN gfxThreadHandle gfxThreadCreate(void *stackarea, size_t stacksz, threadpriority_t prio, DECLARE_THREAD_FUNCTION((*fn),p), void *param);
 
 	/**
 	 * @brief	Wait for a thread to finish.
@@ -433,7 +429,7 @@
 	 * 				once the thread has ended.
 	 * @api
 	 */
-	threadreturn_t gfxThreadWait(gfxThreadHandle thread);
+	C_FN threadreturn_t gfxThreadWait(gfxThreadHandle thread);
 
 	/**
 	 * @brief	Get the current thread handle.
@@ -442,7 +438,7 @@
 	 *
 	 * @api
 	 */
-	gfxThreadHandle gfxThreadMe(void);
+	C_FN gfxThreadHandle gfxThreadMe(void);
 
 	/**
 	 * @brief	Close the thread handle.
@@ -454,11 +450,7 @@
 	 *
 	 * @api
 	 */
-	void gfxThreadClose(gfxThreadHandle thread);
-
-	#ifdef __cplusplus
-	}
-	#endif
+	C_FN void gfxThreadClose(gfxThreadHandle thread);
 
 /**
  * All the above was just for the doxygen documentation. All the implementation of the above
@@ -487,17 +479,243 @@
 #endif
 
 /**
- * If the operating system is capable of polling the following routines are also defined.
- * We leave this to here so that the operating system can define GFX_OS_POLLS.
- * Note: We are not doxygen commenting this as this should be undocumented for user programs.
+ * In some cases the operating system will use one of the pre-canned implementations below.
  */
+
 #if GFX_OS_POLLS
-	// Turn polling off
-	void gfxPollOff(void);
-	// Turn polling on (nesting off's and on's allows polling only at the top level so make sure they are symmetric)
-	void gfxPollOn(void);
-	// Perform a poll
-	void gfxPoll(void);
+	C_FN void gfxPollOff(void);
+	C_FN void gfxPollOn(void);
+	C_FN void gfxPoll(void);
+#endif
+
+#if GFX_OS_NEED_EXIT
+	C_FN void gfxHalt(const char *msg);
+	C_FN void gfxExit(void);
+#endif
+
+#if GFX_OS_SAFEHEAP_SIZE != 0
+	C_FN void gfxAddHeapBlock(void *ptr, size_t sz);
+#endif
+
+#if GFX_OS_SAFEHEAP_SIZE != 0 || GFX_OS_CLIB_HEAP
+	C_FN void *gfxAlloc(size_t sz);
+	C_FN void *gfxRealloc(void *ptr, size_t oldsz, size_t sz);
+	C_FN void gfxFree(void *ptr);
+#endif
+
+#if	GFX_OS_SLEEP_YIELD
+	C_FN void gfxSleepMilliseconds(delaytime_t ms);
+	C_FN void gfxSleepMicroseconds(delaytime_t ms);
+#endif
+
+#if GFX_OS_NEED_THREADS && GFX_ALLOW_MULTITHREAD
+	C_FN void gfxSystemLock(void);
+	C_FN void gfxSystemUnlock(void);
+	C_FN void gfxMutexInit(gfxMutex *pmutex);
+	C_FN void gfxMutexEnter(gfxMutex *pmutex);
+	C_FN void gfxMutexExit(gfxMutex *pmutex);
+	C_FN void gfxSemInit(gfxSem *psem, semcount_t val, semcount_t limit);
+	C_FN bool_t gfxSemWait(gfxSem *psem, delaytime_t ms);
+	C_FN bool_t gfxSemWaitI(gfxSem *psem);
+	C_FN void gfxSemSignal(gfxSem *psem);
+	C_FN void gfxSemSignalI(gfxSem *psem);
+	static void _gosThreadsInit(void) {
+		Qinit(&readyQ);
+		current = &mainthread;
+		current->next = 0;
+		current->size = sizeof(thread);
+		current->flags = FLG_THD_MAIN;
+		current->fn = 0;
+		current->param = 0;
+
+		#if AUTO_DETECT_MASK
+			{
+				uint32_t	i;
+				char **		pout;
+				char **		pin;
+				size_t		diff;
+				char *		framebase;
+
+				// Allocate a buffer to store our test data
+				pframeinfo = gfxAlloc(sizeof(saveloc)*2);
+
+				// Get details of the stack frame from within a function
+				get_stack_state_in_fn();
+
+				// Get details of the stack frame outside the function
+				get_stack_state();
+
+				/* Work out the frame entries to relocate by treating the jump buffer as an array of pointers */
+				stackdirup =  pframeinfo[1].localptr > pframeinfo[0].localptr;
+				pout = (char **)pframeinfo[0].cxt;
+				pin =  (char **)pframeinfo[1].cxt;
+				diff = pframeinfo[0].localptr - pframeinfo[1].localptr;
+				framebase = pframeinfo[0].localptr;
+				jmpmask1 = jmpmask2 = 0;
+				for (i = 0; i < sizeof(jmp_buf)/sizeof(char *); i++, pout++, pin++) {
+					if ((size_t)(*pout - *pin) == diff) {
+						if (i < 32)
+							jmpmask1 |= 1 << i;
+						else
+							jmpmask2 |= 1 << (i-32);
+
+						if (stackdirup) {
+							if (framebase > *pout)
+								framebase = *pout;
+						} else {
+							if (framebase < *pout)
+								framebase = *pout;
+						}
+					}
+				}
+				stackbase = stackdirup ? (pframeinfo[0].localptr - framebase) : (framebase - pframeinfo[0].localptr);
+
+				// Clean up
+				gfxFree(pframeinfo);
+			}
+		#endif
+	}
+
+	gfxThreadHandle gfxThreadMe(void) {
+		return (gfxThreadHandle)current;
+	}
+
+	void gfxYield(void) {
+		if (!_setjmp(current->cxt)) {
+			// Add us back to the Queue
+			Qadd(&readyQ, current);
+
+			// Check if there are dead processes to deallocate
+			while ((current = Qpop(&deadQ)))
+				gfxFree(current);
+
+			// Run the next process
+			current = Qpop(&readyQ);
+			_longjmp(current->cxt, 1);
+		}
+	}
+
+	// This routine is not currently public - but it could be.
+	void gfxThreadExit(threadreturn_t ret) {
+		// Save the results
+		current->param = (void *)ret;
+		current->flags |= FLG_THD_DEAD;
+
+		// Add us to the dead list if we need deallocation as we can't free ourselves.
+		// If someone is waiting on the thread they will do the cleanup.
+		if ((current->flags & (FLG_THD_ALLOC|FLG_THD_WAIT)) == FLG_THD_ALLOC)
+			Qadd(&deadQ, current);
+
+		// Switch to the next task
+		current = Qpop(&readyQ);
+		if (!current)
+			gfxExit();		// Oops - this should never happen!
+		_longjmp(current->cxt, 1);
+	}
+
+	gfxThreadHandle gfxThreadCreate(void *stackarea, size_t stacksz, threadpriority_t prio, DECLARE_THREAD_FUNCTION((*fn),p), void *param) {
+		thread *	t;
+		(void)		prio;
+
+		// Ensure we have a minimum stack size
+		if (stacksz < sizeof(thread)+64) {
+			stacksz = sizeof(thread)+64;
+			stackarea = 0;
+		}
+
+		if (stackarea) {
+			t = (thread *)stackarea;
+			t->flags = 0;
+		} else {
+			t = (thread *)gfxAlloc(stacksz);
+			if (!t)
+				return 0;
+			t->flags = FLG_THD_ALLOC;
+		}
+		t->size = stacksz;
+		t->fn = fn;
+		t->param = param;
+		if (_setjmp(t->cxt)) {
+			// This is the new thread - call the function!
+			gfxThreadExit(current->fn(current->param));
+
+			// We never get here
+			return 0;
+		}
+
+		// Move the stack frame and relocate the context data
+		{
+			char **	s;
+			char *	nf;
+			int		diff;
+			uint32_t	i;
+
+			// Copy the stack frame
+			#if AUTO_DETECT_MASK
+				if (STACK_DIR_UP) {					// Stack grows up
+					nf = (char *)(t) + sizeof(thread) + stackbase;
+					memcpy(t+1, (char *)&t - stackbase, stackbase+sizeof(char *));
+				} else {							// Stack grows down
+					nf = (char *)(t) + stacksz - (stackbase + sizeof(char *));
+					memcpy(nf, &t, stackbase+sizeof(char *));
+				}
+			#elif STACK_DIR_UP
+				// Stack grows up
+				nf = (char *)(t) + sizeof(thread) + stackbase;
+				memcpy(t+1, (char *)&t - stackbase, stackbase+sizeof(char *));
+			#else
+				// Stack grows down
+				nf = (char *)(t) + size - (stackbase + sizeof(char *));
+				memcpy(nf, &t, stackbase+sizeof(char *));
+			#endif
+
+			// Relocate the context data
+			s = (char **)(t->cxt);
+			diff = nf - (char *)&t;
+
+			// Relocate the elements we know need to be relocated
+			for (i = 1; i && i < MASK1; i <<= 1, s++) {
+				if ((MASK1 & i))
+					*s += diff;
+			}
+			#ifdef MASK2
+				for (i = 1; i && i < MASK2; i <<= 1, s++) {
+					if ((MASK1 & i))
+						*s += diff;
+				}
+			#endif
+		}
+
+		// Add this thread to the ready queue
+		Qadd(&readyQ, t);
+		return t;
+	}
+
+	threadreturn_t gfxThreadWait(gfxThreadHandle th) {
+		thread *		t;
+
+		t = th;
+		if (t == current)
+			return -1;
+
+		// Mark that we are waiting
+		t->flags |= FLG_THD_WAIT;
+
+		// Wait for the thread to die
+		while(!(t->flags & FLG_THD_DEAD))
+			gfxYield();
+
+		// Unmark
+		t->flags &= ~FLG_THD_WAIT;
+
+		// Clean up resources if needed
+		if (t->flags & FLG_THD_ALLOC)
+			gfxFree(t);
+
+		// Return the status left by the dead process
+		return (threadreturn_t)t->param;
+	}
+
 #endif
 
 #endif /* _GOS_H */

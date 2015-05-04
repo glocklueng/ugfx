@@ -76,6 +76,9 @@ extern void _gosDeinit(void);
 #if GFX_OS_SAFEHEAP_SIZE != 0
 	extern void _gfxSafeHeapInit(void);
 #endif
+#if GFX_OS_NEED_THREADS && GFX_ALLOW_MULTITHREAD
+	extern void _gfxThreadsInit(void);
+#endif
 
 void gfxInit(void)
 {
@@ -95,6 +98,9 @@ void gfxInit(void)
 	#endif
 	#if GFX_USE_GQUEUE
 		_gqueueInit();
+	#endif
+	#if GFX_OS_NEED_THREADS && GFX_ALLOW_MULTITHREAD
+		_gfxThreadsInit(void);
 	#endif
 	#if GFX_USE_GMISC
 		_gmiscInit();
@@ -173,23 +179,3 @@ void gfxDeinit(void)
 	#endif
 	_gosDeinit();
 }
-
-#if GFX_OS_POLLS
-	static int pollCounter = 0;
-
-	void gfxPollOff(void) {
-		pollCounter++;
-	}
-	void gfxPollOn(void) {
-		pollCounter--;
-	}
-	void gfxPoll(void) {
-		if (pollCounter) {
-			pollCounter++;
-			#if GFX_USE_GTIMER && !GTIMER_USE_THREAD
-				_gtimerPoll();
-			#endif
-			pollCounter--;
-		}
-	}
-#endif
